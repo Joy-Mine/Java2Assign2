@@ -29,6 +29,8 @@ public class Page3Controller implements Initializable {
 
     static boolean gameOver=false;
 
+
+
     @FXML
     private Pane base_square;
 

@@ -6,7 +6,9 @@ import application.controller.Page3Controller;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -27,12 +30,7 @@ import java.util.Scanner;
 
 
 public class MyClient extends Application {
-            Stage secondStage=new Stage();
-//    static Socket s;
-//    static InputStream inputStream;
-//    static OutputStream outputStream;
-//    static Scanner in;
-//    static PrintWriter out;
+//            Stage secondStage=new Stage();
 
 //    public static Stage secondStage=new Stage();
 //    public static Scene scene1,scene2,scene3;
@@ -57,7 +55,6 @@ public class MyClient extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            int currentScene=0;
 //            FXMLLoader fxmlLoader = new FXMLLoader();
 //            fxmlLoader.setLocation(getClass().getClassLoader().getResource("Page1.fxml"));
 //            Pane root = fxmlLoader.load();
@@ -66,31 +63,68 @@ public class MyClient extends Application {
 //            primaryStage.setResizable(false);
 //            primaryStage.show();
 
-//            Stage secondStage=new Stage();
-//.......................................
-//            FXMLLoader fxmlLoader1=new FXMLLoader();
-//            fxmlLoader1.setLocation(getClass().getClassLoader().getResource("page1.fxml"));
-//            Pane root1=fxmlLoader1.load();
-//            Scene scene1=new Scene(root1);
-//            Page1Controller controller1=fxmlLoader1.getController();
+            Stage secondStage=new Stage();
+
+            FXMLLoader fxmlLoader1=new FXMLLoader();
+            fxmlLoader1.setLocation(getClass().getClassLoader().getResource("page1.fxml"));
+            Pane root1=fxmlLoader1.load();
+            Scene scene1=new Scene(root1);
+            Page1Controller controller1=fxmlLoader1.getController();
 //
-//            FXMLLoader fxmlLoader2=new FXMLLoader();
-//            fxmlLoader2.setLocation(getClass().getClassLoader().getResource("page2.fxml"));
-//            Pane root2=fxmlLoader2.load();
-//            Scene scene2=new Scene(root2);
-//            Page2Controller controller2=fxmlLoader2.getController();
+            FXMLLoader fxmlLoader2=new FXMLLoader();
+            fxmlLoader2.setLocation(getClass().getClassLoader().getResource("page2.fxml"));
+            Pane root2=fxmlLoader2.load();
+            Scene scene2=new Scene(root2);
+            Page2Controller controller2=fxmlLoader2.getController();
+
+            FXMLLoader fxmlLoader3=new FXMLLoader();
+            fxmlLoader3.setLocation(getClass().getClassLoader().getResource("page3.fxml"));
+            Pane root3=fxmlLoader3.load();
+            Scene scene3=new Scene(root3);
+            Page3Controller controller3=fxmlLoader3.getController();
 //
-//            FXMLLoader fxmlLoader3=new FXMLLoader();
-//            fxmlLoader3.setLocation(getClass().getClassLoader().getResource("page3.fxml"));
-//            Pane root3=fxmlLoader3.load();
-//            Scene scene3=new Scene(root3);
-//            Page3Controller controller3=fxmlLoader3.getController();
-//
-//            secondStage.setTitle("Tic Tac Toe");
-//            secondStage.setScene(scene1);
-//            currentScene=1;
-//            secondStage.setResizable(false);
-//            secondStage.show();
+
+            Scene scene=scene1;
+            scene.addEventHandler(Event.ANY, new EventHandler<Event>() {
+                @Override
+                public void handle(Event event) {
+                    EventType<? extends Event> type = event.getEventType();
+                    String name = type.getName();
+
+//                KeyEvent.KEY_PRESSED
+//                    switch (name) {
+//                        case "MOUSE_CLICKED":
+//                            // 按键后触发播放动画效果，播放后完全不影响应用工作线程，说明完全可行
+//                            // 可以在事件中处理逻辑计算
+//                            break;
+//                        case "KEY_PRESSED":
+//                            // 任意键盘按键触发场景切换，切换到第二个场景
+//                            primaryStage.setScene(scene2);
+//                            break;
+//                    }
+                    Scene ascene=scene1;
+                    if(name=="KEY_PRESSED"){
+                        switch (controller1.changeScene()) {
+                            case 1:
+                                ascene=scene1;
+                                break;
+                            case 2:
+                                ascene=scene2;
+                                break;
+                            case 3:
+                                ascene=scene3;
+                                break;
+                        }
+                        primaryStage.setScene(ascene);
+                    }
+                    event.consume();
+                }
+            });
+
+            secondStage.setTitle("Tic Tac Toe");
+            secondStage.setScene(scene1);
+            secondStage.setResizable(false);
+            secondStage.show();
 //
 //
 //            Socket s=new Socket("localhost",8886);
@@ -114,46 +148,36 @@ public class MyClient extends Application {
     }
 
     public static void main(String[] args) throws IOException {
-//        try {
-            Socket s=new Socket("localhost",8886);
-            InputStream inputStream=s.getInputStream();
-            OutputStream outputStream=s.getOutputStream();
-            Scanner in=new Scanner(inputStream);
-            PrintWriter out=new PrintWriter(outputStream);
 
-            launch(args);
-//            List<Node> nodeList1=scene1.getRoot().getChildrenUnmodifiable();
+        launch(args);
 
-        SimpleStringProperty commandProperty=new SimpleStringProperty();
-
-
-            s.close();
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
+//        InputStream inputStream;
+//        OutputStream outputStream;
+//        Scanner in=null;
+//        PrintWriter out = null;
+//        try(Socket s=new Socket("localhost",8886)){
+//            inputStream=s.getInputStream();
+//            outputStream=s.getOutputStream();
+//            in=new Scanner(inputStream);
+//            out=new PrintWriter(outputStream);
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-
-    }
-//    public static boolean login(String userName,String password){
-//        boolean success=false;
-//        out.println("Login "+userName+" "+password);
-//        String ans=in.next();
-//        System.out.println("ans: "+ans);
-//        if(ans=="succeed"){
-//            System.out.println("登录成功");
-//            secondStage.setScene(scene2);
-//        }else {
-//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//            alert.titleProperty().set("Error");
-//            alert.headerTextProperty().set("The user name or password is incorrect");
-//            alert.showAndWait();
-//            System.out.println("登录失败");
+//
+//        ServerSocket scene1Server=new ServerSocket(8881);
+//        Socket scene1Socket=scene1Server.accept();
+//        System.out.println("Connected to scene1");
+//        InputStream inputStream1= scene1Socket.getInputStream();
+//        OutputStream outputStream1=scene1Socket.getOutputStream();
+//        Scanner in1=new Scanner(inputStream1);
+//        PrintWriter out1=new PrintWriter(outputStream1);
+//        while (in1.hasNext()){
+//            String command1=in1.nextLine();
+//            out.println(command1);//转发给MyServer
+//            out.flush();
+//            String ans1=in.next();//收到MyServer回复
+//            out1.println(ans1);//将回复转发给Scene1
+//            out1.flush();
 //        }
-//
-//        if(success)
-//            return true;
-//
-//        return false;
-//    }
+    }
 }

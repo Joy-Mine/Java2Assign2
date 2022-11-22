@@ -18,7 +18,7 @@ public class MyServer {
         begin();
         new BeforeExit();
         ServerSocket serverSocket=new ServerSocket(8886);
-        System.out.println("已存档用户数："+playerList.size());
+        System.out.println("服务器加载完毕，已存档用户数："+playerList.size());
 
         System.out.println("Waiting for the players...");
         while (true){
@@ -35,6 +35,7 @@ public class MyServer {
         }
 
     }
+    //针对未匹配的玩家
     public static void doSomeService(){
         while (true){
             if(!in.hasNext())
@@ -45,22 +46,36 @@ public class MyServer {
     }
     public static void executeCommand(String command){
         System.out.println("Received command: "+command);
-        if(command=="Login"){
+        if("Login".equals(command)){
             String username=in.next();
             String password=in.next();
             System.out.println(command+username+password);
             boolean succeed=false;
             for(int i=0;i<playerList.size();++i)
-                if(username==playerList.get(i).username && password==playerList.get(i).password){
+                if(username.equals(playerList.get(i).username) && password.equals(playerList.get(i).password)){
                     out.println("succeed");
                     succeed=true;
                     break;
                 }
             if(!succeed)
                 out.println("fail");
-        }else if (command=="Signup"){
-
+        }else if ("Signup".equals(command)){
+            String username=in.next();
+            String password=in.next();
+            System.out.println(command+username+password);
+            boolean fail=true;
+            for(int i=0;i<playerList.size();++i)
+                if(username.equals(playerList.get(i).username)){
+                    out.println("fail");
+                    fail=false;
+                    break;
+                }
+            if(!fail){
+                out.println("fail");
+                playerList.add(new Player(username,password,0,0));
+            }
         }
+        out.flush();
     }
     static void begin() throws IOException {
         BufferedReader reader=new BufferedReader(new FileReader("resources//Players.txt"));

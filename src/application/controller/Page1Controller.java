@@ -20,15 +20,27 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 //import static application.MyClient.login;
 
 public class Page1Controller implements Initializable{
-    SimpleStringProperty usernameProperty=new SimpleStringProperty();
-    SimpleStringProperty passwordProperty=new SimpleStringProperty();
-    SimpleStringProperty command=new SimpleStringProperty();
+//    SimpleStringProperty usernameProperty=new SimpleStringProperty();
+//    SimpleStringProperty passwordProperty=new SimpleStringProperty();
+//    SimpleStringProperty command=new SimpleStringProperty();
+
+    Socket s;
+    InputStream inputStream;
+    OutputStream outputStream;
+    Scanner in;
+    PrintWriter out;
+    int sceneNum=1;
 
     @FXML
     private Button SignUp;
@@ -62,15 +74,31 @@ public class Page1Controller implements Initializable{
         ok.setLayoutX(150);
         ok.setLayoutY(200);
 
-        usernameProperty.bind(textField1.textProperty());
-        passwordProperty.bind(textField2.textProperty());
+//        usernameProperty.bind(textField1.textProperty());
+//        passwordProperty.bind(textField2.textProperty());
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-//                System.out.println(userName+password);
-                System.out.println(usernameProperty.get()+passwordProperty.get());
-                command.set("Login "+usernameProperty.get()+" "+passwordProperty);
-                getCommand();
+                String userName=textField1.getText();
+                String password=textField2.getText();
+                System.out.println(userName+password);
+                String com="Login "+userName+" "+password;
+                System.out.println(com);
+                System.out.println(out.getClass());
+                out.println(com);
+                out.flush();
+                String ans=in.next();
+                System.out.println(ans);
+                if("fail".equals(ans)){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.titleProperty().set("Error");
+                    alert.headerTextProperty().set("The username or password is incorrect.");
+                    alert.showAndWait();
+                }else {
+                    System.out.println("登录成功!");
+                    //todo: 换场景！！
+                    sceneNum=2;
+                }
                 loginStage.close();
             }
         });
@@ -113,23 +141,20 @@ public class Page1Controller implements Initializable{
             String userName=textField1.getText();
             String password=textField2.getText();
             System.out.println(userName+password);
-            boolean success=true;
-                for(int i=0;i<MyServer.playerList.size();++i)
-                    if(userName==MyServer.playerList.get(i).username) {
-                        success = false;
-                        //注册成功
-                        MyServer.playerList.add(new Player(userName,password,0,0));
-                        System.out.println("注册成功");
-                        //todo:继续
-                    }
-
-            if (!success){
+            out.println("Signup "+userName+" "+password);
+            out.flush();
+            String ans=in.next();
+            System.out.println(ans);
+            if("fail".equals(ans)){
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.titleProperty().set("Error");
-                alert.headerTextProperty().set("This username has been registered.");
+                alert.headerTextProperty().set("This username already exists.");
                 alert.showAndWait();
+            }else {
+                System.out.println("注册成功!");
+                //todo: 换场景！！
+                sceneNum=2;
             }
-
             signupStage.close();
         });
 
@@ -141,16 +166,25 @@ public class Page1Controller implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        try{
+            s=new Socket("localhost",8886);
+            inputStream=s.getInputStream();
+            outputStream=s.getOutputStream();
+            in=new Scanner(inputStream);
+            out=new PrintWriter(outputStream);
+            System.out.println(out.getClass());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                s.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public SimpleStringProperty getCommand(){
-        return command;
+    public int changeScene(){
+        return sceneNum;
     }
-    public boolean executeCommand(){
-        return false;
-    }
-//
-//    public String LoginPage(){
-//    }
 }

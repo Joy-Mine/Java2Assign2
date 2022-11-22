@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 
 public class Page2Controller implements Initializable {
 
+
     @FXML
     private Button StartGame;
 
