@@ -1,7 +1,9 @@
 package application.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -11,12 +13,21 @@ import javafx.scene.shape.Rectangle;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable {
-    private static final int PLAY_1 = 1;
-    private static final int PLAY_2 = 2;
-    private static final int EMPTY = 0;
-    private static final int BOUND = 90;
-    private static final int OFFSET = 15;
+import static application.Game.*;
+//棋盘，显示对手
+public class Page3Controller implements Initializable {
+//    private static final int PLAY_1 = 1;
+//    private static final int PLAY_2 = 2;
+//    private static final int EMPTY = 0;
+//    private static final int BOUND = 90;
+//    private static final int OFFSET = 15;
+//
+//    private static boolean TURN = false;
+//
+//    private static final int[][] chessBoard = new int[3][3];
+//    private static final boolean[][] flag = new boolean[3][3];
+
+    static boolean gameOver=false;
 
     @FXML
     private Pane base_square;
@@ -24,25 +35,45 @@ public class Controller implements Initializable {
     @FXML
     private Rectangle game_panel;
 
-    private static boolean TURN = false;
-
-    private static final int[][] chessBoard = new int[3][3];
-    private static final boolean[][] flag = new boolean[3][3];
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+//        System.out.println(location);
+//        System.out.println(resources);
         game_panel.setOnMouseClicked(event -> {
             int x = (int) (event.getX() / BOUND);
             int y = (int) (event.getY() / BOUND);
+//            System.out.println(x+" "+y);
             if (refreshBoard(x, y)) {
+                if(gameOver){
+                    //todo: gameover
+                }
                 TURN = !TURN;
             }
         });
     }
 
+    private void switchScene(){
+
+    }
+
     private boolean refreshBoard (int x, int y) {
         if (chessBoard[x][y] == EMPTY) {
-            chessBoard[x][y] = TURN ? PLAY_1 : PLAY_2;
+            int tmp=chessBoard[x][y] = TURN ? PLAY_1 : PLAY_2;
+
+            if(x==1 && y==1){
+                if(chessBoard[x+1][y-1]==tmp && chessBoard[x-1][y+1]==tmp)
+                    gameOver=true;
+                else if(chessBoard[x+1][y+1]==tmp && chessBoard[x-1][y-1]==tmp)
+                    gameOver=true;
+                else if(chessBoard[x][y+1]==tmp && chessBoard[x][y-1]==tmp)
+                    gameOver=true;
+                else if(chessBoard[x+1][y]==tmp && chessBoard[x-1][y]==tmp)
+                    gameOver=true;
+            }
+            else {
+                //todo: gameover
+            }
+
             drawChess();
             return true;
         }
