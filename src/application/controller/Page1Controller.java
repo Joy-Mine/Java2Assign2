@@ -82,10 +82,7 @@ public class Page1Controller implements Initializable{
                 String userName=textField1.getText();
                 String password=textField2.getText();
                 System.out.println(userName+password);
-                String com="Login "+userName+" "+password;
-                System.out.println(com);
-                System.out.println(out.getClass());
-                out.println(com);
+                out.println("Login "+userName+" "+password);
                 out.flush();
                 String ans=in.next();
                 System.out.println(ans);
@@ -172,15 +169,8 @@ public class Page1Controller implements Initializable{
             outputStream=s.getOutputStream();
             in=new Scanner(inputStream);
             out=new PrintWriter(outputStream);
-            System.out.println(out.getClass());
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try {
-                s.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
