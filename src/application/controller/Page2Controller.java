@@ -32,4 +32,8 @@ public class Page2Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
     }
+
+    public Button getStartGame(){
+        return StartGame;
+    }
 }

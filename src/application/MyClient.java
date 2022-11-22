@@ -2,31 +2,16 @@ package application;
 
 import application.controller.Page1Controller;
 import application.controller.Page2Controller;
-import application.controller.Page3Controller;
 import javafx.application.Application;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Scanner;
 
 
 public class MyClient extends Application {
@@ -77,11 +62,11 @@ public class MyClient extends Application {
             Scene scene2=new Scene(root2);
             Page2Controller controller2=fxmlLoader2.getController();
 
-            FXMLLoader fxmlLoader3=new FXMLLoader();
-            fxmlLoader3.setLocation(getClass().getClassLoader().getResource("page3.fxml"));
-            Pane root3=fxmlLoader3.load();
-            Scene scene3=new Scene(root3);
-            Page3Controller controller3=fxmlLoader3.getController();
+//            FXMLLoader fxmlLoader3=new FXMLLoader();
+//            fxmlLoader3.setLocation(getClass().getClassLoader().getResource("page3.fxml"));
+//            Pane root3=fxmlLoader3.load();
+//            Scene scene3=new Scene(root3);
+//            Page3Controller controller3=fxmlLoader3.getController();
 //
 
             Scene scene=scene1;
@@ -109,9 +94,9 @@ public class MyClient extends Application {
                             case 2:
                                 ascene=scene2;
                                 break;
-                            case 3:
-                                ascene=scene3;
-                                break;
+//                            case 3:
+//                                ascene=scene3;
+//                                break;
                         }
                         secondStage.setScene(ascene);
                     }

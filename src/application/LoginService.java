@@ -5,12 +5,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LoginService implements Runnable{
     private Socket s;
     private Scanner in;
     private PrintWriter out;
+
+    public  ArrayList<Socket> socketList=new ArrayList<>();
 
     public LoginService(Socket aSocket){
         this.s=aSocket;
@@ -38,17 +41,21 @@ public class LoginService implements Runnable{
             if(!in.hasNext())
                 break;
             String command=in.next();
-            if(executeCommand(command)){ //登录成功
-//                int id1=MyServer.onlineList.get(0),id2=MyServer.onlineList.get(1);
-                MyService aService=new MyService(MyServer.socketList.get(0),MyServer.socketList.get(1));
-                Thread t2=new Thread(aService);
-                t2.start();
-            }
+            System.out.println("Received command: "+command);
+            executeCommand(command);
+//            if(executeCommand(command)){ //登录成功
+////                int id1=MyServer.onlineList.get(0),id2=MyServer.onlineList.get(1);
+//                if(MyServer.socketList.size()<2){
+//                    continue;
+//                }
+//                MyService aService=new MyService(MyServer.socketList.get(0),MyServer.socketList.get(1));
+//                Thread t2=new Thread(aService);
+//                t2.start();
+//            }
         }
     }
     public boolean executeCommand(String command){
         boolean succeed=true;
-        System.out.println("Received command: "+command);
         if("Login".equals(command)){
             String username=in.next();
             String password=in.next();
@@ -58,7 +65,7 @@ public class LoginService implements Runnable{
                 if(username.equals(MyServer.playerList.get(i).username) && password.equals(MyServer.playerList.get(i).password)){
                     out.println("succeed "+MyServer.playerList.get(i).totalGame+" "+MyServer.playerList.get(i).wonGame);
                     MyServer.onlineList.add(i);
-                    MyServer.socketList.add(s);
+                    socketList.add(s);
                     succeed=true;
                     break;
                 }
@@ -79,8 +86,22 @@ public class LoginService implements Runnable{
                 out.println("succeed");
                 MyServer.playerList.add(new Player(username,password,0,0));
                 MyServer.onlineList.add(MyServer.playerList.size());
-                MyServer.socketList.add(s);
+                socketList.add(s);
             }
+        }else if("Prepared".equals(command)){
+            socketList.add(s);
+            if(socketList.size()<2){
+                System.out.println("Please wait for another player...请等待对手上线...");
+                out.println("Please wait for another player...请等待对手上线...");
+                out.flush();
+                return false;
+                }
+            System.out.println("GamBegin");
+            out.println("GameBegin");
+            out.flush();
+            MyService aService=new MyService(socketList.get(0),socketList.get(1));
+            Thread t2=new Thread(aService);
+            t2.start();
         }
         out.flush();
         if(succeed)

@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -15,6 +16,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -28,12 +37,28 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
+
 //import static application.MyClient.login;
 
 public class Page1Controller implements Initializable{
 //    SimpleStringProperty usernameProperty=new SimpleStringProperty();
 //    SimpleStringProperty passwordProperty=new SimpleStringProperty();
 //    SimpleStringProperty command=new SimpleStringProperty();
+
+
+    private static final int PLAY_1 = 1;
+    private static final int PLAY_2 = 2;
+    private static final int EMPTY = 0;
+    private static final int BOUND = 90;
+    private static final int OFFSET = 15;
+
+    private static boolean TURN = false;
+
+    private static final int[][] chessBoard = new int[3][3];
+    private static final boolean[][] flag = new boolean[3][3];
+
+    private static boolean gameOver=false;
+    private AnchorPane baseSquare;
 
     Socket s;
     InputStream inputStream;
@@ -97,9 +122,74 @@ public class Page1Controller implements Initializable{
                     int won=Integer.parseInt(in.next());
                     System.out.println("你好，"+userName+"！你的战绩："+won+"胜 "+total+"负");
                     //todo: 换场景！！
+                    loginStage.close();
                     sceneNum=2;
 
+                    out.println("Prepared");
+                    out.flush();
+                    String ans2="";
+                    in.nextLine();
+                    if(in.hasNext())
+                        ans=in.nextLine();
+                    System.out.println(ans);
+                    System.out.println("GameBegin".equals(ans2));
+                    if("GameBegin".equals(ans2)){
+                        //棋盘出现，开始下棋
+                        System.out.println("对局开始");
+                        Stage board=new Stage();
+                        board.setWidth(600);
+                        board.setHeight(400);
+                        Rectangle game_panel=new Rectangle();
+                        baseSquare=new AnchorPane();
+                        baseSquare.setPrefWidth(300);
+                        baseSquare.setPrefHeight(300);
+                        game_panel.setWidth(270);
+                        game_panel.setHeight(270);
+//                    game_panel.setStroke(Paint.valueOf("BLACK"));
+                        game_panel.setStrokeType(StrokeType.INSIDE);
+                        Line line1=new Line();
+                        line1.setEndX(170);
+                        line1.setStartX(-100);
+                        line1.setLayoutX(115);
+                        line1.setLayoutY(105);
+                        Line line2=new Line();
+                        line2.setEndX(170);
+                        line2.setStartX(-100);
+                        line2.setLayoutX(115);
+                        line2.setLayoutY(195);
+                        Line line3=new Line();
+                        line3.setEndX(170);
+                        line3.setStartX(-100);
+                        line3.setLayoutX(70);
+                        line3.setLayoutY(150);
+                        line3.setRotate(270.0);
+                        Line line4=new Line();
+                        line4.setEndX(170);
+                        line4.setStartX(-100);
+                        line4.setLayoutX(160);
+                        line4.setLayoutY(151);
+                        line4.setRotate(90.0);
+                        baseSquare.getChildren().addAll(game_panel,line1,line2,line3,line4);
+                        Scene boardScene=new Scene(baseSquare);
+                        board.setScene(boardScene);
+                        board.show();
 
+                        game_panel.setOnMouseClicked(aevent -> {
+                            int x = (int) (aevent.getX() / BOUND);
+                            int y = (int) (aevent.getY() / BOUND);
+                            if (refreshBoard(x, y)) {
+                                if(gameOver){
+                                    //gameover
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.titleProperty().set("Win");
+                                    alert.headerTextProperty().set("You Win.");
+                                    alert.showAndWait();
+                                    board.close();
+                                }
+                                TURN = !TURN;
+                            }
+                        });
+                    }else System.out.println("Please wait for another player...请等待对手上线...");
 
                 }
                 loginStage.close();
@@ -157,6 +247,69 @@ public class Page1Controller implements Initializable{
                 System.out.println("注册成功!");
                 //todo: 换场景！！
                 sceneNum=2;
+
+                out.println("Prepared");
+                out.flush();
+                String ans2=in.nextLine();
+
+                if("Game begin".equals(ans2)){
+                    //棋盘出现，开始下棋
+                    System.out.println("对局开始");
+                    Stage board=new Stage();
+                    board.setWidth(600);
+                    board.setHeight(400);
+                    Rectangle game_panel=new Rectangle();
+                    baseSquare=new AnchorPane();
+                    baseSquare.setPrefWidth(300);
+                    baseSquare.setPrefHeight(300);
+                    game_panel.setWidth(270);
+                    game_panel.setHeight(270);
+//                    game_panel.setStroke(Paint.valueOf("BLACK"));
+                    game_panel.setStrokeType(StrokeType.INSIDE);
+                    Line line1=new Line();
+                    line1.setEndX(170);
+                    line1.setStartX(-100);
+                    line1.setLayoutX(115);
+                    line1.setLayoutY(105);
+                    Line line2=new Line();
+                    line2.setEndX(170);
+                    line2.setStartX(-100);
+                    line2.setLayoutX(115);
+                    line2.setLayoutY(195);
+                    Line line3=new Line();
+                    line3.setEndX(170);
+                    line3.setStartX(-100);
+                    line3.setLayoutX(70);
+                    line3.setLayoutY(150);
+                    line3.setRotate(270.0);
+                    Line line4=new Line();
+                    line4.setEndX(170);
+                    line4.setStartX(-100);
+                    line4.setLayoutX(160);
+                    line4.setLayoutY(151);
+                    line4.setRotate(90.0);
+                    baseSquare.getChildren().addAll(game_panel,line1,line2,line3,line4);
+                    Scene boardScene=new Scene(baseSquare);
+                    board.setScene(boardScene);
+                    board.show();
+
+                    game_panel.setOnMouseClicked(aevent -> {
+                        int x = (int) (aevent.getX() / BOUND);
+                        int y = (int) (aevent.getY() / BOUND);
+                        if (refreshBoard(x, y)) {
+                            if(gameOver){
+                                //gameover
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.titleProperty().set("Win");
+                                alert.headerTextProperty().set("You Win.");
+                                alert.showAndWait();
+                                board.close();
+                            }
+                            TURN = !TURN;
+                        }
+                    });
+                }else System.out.println("Please wait for another player...请等待对手上线...");
+
             }
             signupStage.close();
         });
@@ -182,5 +335,140 @@ public class Page1Controller implements Initializable{
 
     public int changeScene(){
         return sceneNum;
+    }
+
+    private boolean refreshBoard (int x, int y) {
+        if (chessBoard[x][y] == EMPTY) {
+            int tmp=chessBoard[x][y] = TURN ? PLAY_1 : PLAY_2;
+
+
+            judgeOver(x,y,tmp);//judge gameover
+            drawChess();
+            return true;
+        }
+        return false;
+    }
+
+    public void judgeOver(int x,int y,int tmp){
+        if(x==1 && y==1){
+            if(chessBoard[x+1][y-1]==tmp && chessBoard[x-1][y+1]==tmp)
+                gameOver=true;
+            else if(chessBoard[x+1][y+1]==tmp && chessBoard[x-1][y-1]==tmp)
+                gameOver=true;
+            else if(chessBoard[x][y+1]==tmp && chessBoard[x][y-1]==tmp)
+                gameOver=true;
+            else if(chessBoard[x+1][y]==tmp && chessBoard[x-1][y]==tmp)
+                gameOver=true;
+        }
+        else if(x==0 && y==0){
+            if(chessBoard[x+1][y+1]==tmp && chessBoard[x+2][y+2]==tmp)
+                gameOver=true;
+            else if(chessBoard[x+1][y]==tmp && chessBoard[x+2][y]==tmp)
+                gameOver=true;
+            else if(chessBoard[x][y+1]==tmp && chessBoard[x][y+2]==tmp)
+                gameOver=true;
+        }
+        else if(x==2 && y==0){
+            if(chessBoard[x-1][y+1]==tmp && chessBoard[x-2][y+2]==tmp)
+                gameOver=true;
+            else if(chessBoard[x-1][y]==tmp && chessBoard[x-2][y]==tmp)
+                gameOver=true;
+            else if(chessBoard[x][y+1]==tmp && chessBoard[x][y+2]==tmp)
+                gameOver=true;
+        }
+        else if(x==0 && y==2){
+            if(chessBoard[x+1][y-1]==tmp && chessBoard[x+2][y-2]==tmp)
+                gameOver=true;
+            else if(chessBoard[x+1][y]==tmp && chessBoard[x+2][y]==tmp)
+                gameOver=true;
+            else if(chessBoard[x][y-1]==tmp && chessBoard[x][y-2]==tmp)
+                gameOver=true;
+        }
+        else if(x==2 && y==2){
+            if(chessBoard[x-1][y-1]==tmp && chessBoard[x-2][y-2]==tmp)
+                gameOver=true;
+            else if(chessBoard[x-1][y]==tmp && chessBoard[x-2][y]==tmp)
+                gameOver=true;
+            else if(chessBoard[x][y-1]==tmp && chessBoard[x][y-2]==tmp)
+                gameOver=true;
+        }
+        else if(x==0 && y==1){
+            if(chessBoard[x][y-1]==tmp && chessBoard[x][y+1]==tmp)
+                gameOver=true;
+            else if(chessBoard[x+1][y]==tmp && chessBoard[x+2][y]==tmp)
+                gameOver=true;
+        }
+        else if(x==2 && y==1){
+            if(chessBoard[x][y-1]==tmp && chessBoard[x][y+1]==tmp)
+                gameOver=true;
+            else if(chessBoard[x-1][y]==tmp && chessBoard[x-2][y]==tmp)
+                gameOver=true;
+        }
+        else if(x==1 && y==0){
+            if(chessBoard[x-1][y]==tmp && chessBoard[x+1][y]==tmp)
+                gameOver=true;
+            else if(chessBoard[x][y+1]==tmp && chessBoard[x][y+2]==tmp)
+                gameOver=true;
+        }
+        else if(x==1 && y==2){
+            if(chessBoard[x-1][y]==tmp && chessBoard[x+1][y]==tmp)
+                gameOver=true;
+            else if(chessBoard[x][y-1]==tmp && chessBoard[x][y-2]==tmp)
+                gameOver=true;
+        }
+    }
+
+    private void drawChess () {
+        for (int i = 0; i < chessBoard.length; i++) {
+            for (int j = 0; j < chessBoard[0].length; j++) {
+                if (flag[i][j]) {
+                    // This square has been drawing, ignore.
+                    continue;
+                }
+                switch (chessBoard[i][j]) {
+                    case PLAY_1:
+                        drawCircle(i, j);
+                        break;
+                    case PLAY_2:
+                        drawLine(i, j);
+                        break;
+                    case EMPTY:
+                        // do nothing
+                        break;
+                    default:
+                        System.err.println("Invalid value!");
+                }
+            }
+        }
+    }
+
+    private void drawCircle (int i, int j) {
+        Circle circle = new Circle();
+        baseSquare.getChildren().add(circle);
+        circle.setCenterX(i * BOUND + BOUND / 2.0 + OFFSET);
+        circle.setCenterY(j * BOUND + BOUND / 2.0 + OFFSET);
+        circle.setRadius(BOUND / 2.0 - OFFSET / 2.0);
+        circle.setStroke(Color.RED);
+        circle.setFill(Color.TRANSPARENT);
+        flag[i][j] = true;
+    }
+
+    private void drawLine (int i, int j) {
+        Line line_a = new Line();
+        Line line_b = new Line();
+        baseSquare.getChildren().add(line_a);
+        baseSquare.getChildren().add(line_b);
+        line_a.setStartX(i * BOUND + OFFSET * 1.5);
+        line_a.setStartY(j * BOUND + OFFSET * 1.5);
+        line_a.setEndX((i + 1) * BOUND + OFFSET * 0.5);
+        line_a.setEndY((j + 1) * BOUND + OFFSET * 0.5);
+        line_a.setStroke(Color.BLUE);
+
+        line_b.setStartX((i + 1) * BOUND + OFFSET * 0.5);
+        line_b.setStartY(j * BOUND + OFFSET * 1.5);
+        line_b.setEndX(i * BOUND + OFFSET * 1.5);
+        line_b.setEndY((j + 1) * BOUND + OFFSET * 0.5);
+        line_b.setStroke(Color.BLUE);
+        flag[i][j] = true;
     }
 }

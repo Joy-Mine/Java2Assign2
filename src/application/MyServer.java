@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class MyServer {
     public static ArrayList<Player> playerList=new ArrayList<>();
-    public static ArrayList<Socket> socketList=new ArrayList<>();
+//    public static ArrayList<Socket> socketList=new ArrayList<>();
     public static ArrayList<Integer> onlineList=new ArrayList<>();
     static Socket s;
     static InputStream inputStream;
@@ -56,7 +56,7 @@ public class MyServer {
             writer.write(line);
         }
         writer.close();
-        socketList=new ArrayList<>();
+//        socketList=new ArrayList<>();
         onlineList=new ArrayList<>();
     }
 }
