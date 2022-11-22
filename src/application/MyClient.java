@@ -94,11 +94,9 @@ public class MyClient extends Application {
 //                KeyEvent.KEY_PRESSED
 //                    switch (name) {
 //                        case "MOUSE_CLICKED":
-//                            // 按键后触发播放动画效果，播放后完全不影响应用工作线程，说明完全可行
-//                            // 可以在事件中处理逻辑计算
 //                            break;
 //                        case "KEY_PRESSED":
-//                            // 任意键盘按键触发场景切换，切换到第二个场景
+//                            // 切换到第二个场景
 //                            primaryStage.setScene(scene2);
 //                            break;
 //                    }
@@ -115,7 +113,7 @@ public class MyClient extends Application {
                                 ascene=scene3;
                                 break;
                         }
-                        primaryStage.setScene(ascene);
+                        secondStage.setScene(ascene);
                     }
                     event.consume();
                 }

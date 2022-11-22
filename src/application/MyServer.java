@@ -1,6 +1,7 @@
 package application;
 
 import java.io.*;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.Scanner;
 
 public class MyServer {
     public static ArrayList<Player> playerList=new ArrayList<>();
+    public static ArrayList<Socket> socketList=new ArrayList<>();
+    public static ArrayList<Integer> onlineList=new ArrayList<>();
     static Socket s;
     static InputStream inputStream;
     static OutputStream outputStream;
@@ -25,57 +28,14 @@ public class MyServer {
             s=serverSocket.accept();
             System.out.println("Connected to a new player");
 
-            inputStream=s.getInputStream();
-            outputStream=s.getOutputStream();
-            in=new Scanner(inputStream);
-            out=new PrintWriter(outputStream);
+            LoginService aService=new LoginService(s);
+            Thread t1=new Thread(aService);
+            t1.start();
 
-            doSomeService();
+//            doSomeService();
 
         }
 
-    }
-    //针对未匹配的玩家
-    public static void doSomeService(){
-        while (true){
-            if(!in.hasNext())
-                break;
-            String command=in.next();
-            executeCommand(command);
-        }
-    }
-    public static void executeCommand(String command){
-        System.out.println("Received command: "+command);
-        if("Login".equals(command)){
-            String username=in.next();
-            String password=in.next();
-            System.out.println(command+username+password);
-            boolean succeed=false;
-            for(int i=0;i<playerList.size();++i)
-                if(username.equals(playerList.get(i).username) && password.equals(playerList.get(i).password)){
-                    out.println("succeed");
-                    succeed=true;
-                    break;
-                }
-            if(!succeed)
-                out.println("fail");
-        }else if ("Signup".equals(command)){
-            String username=in.next();
-            String password=in.next();
-            System.out.println(command+username+password);
-            boolean fail=true;
-            for(int i=0;i<playerList.size();++i)
-                if(username.equals(playerList.get(i).username)){
-                    out.println("fail");
-                    fail=false;
-                    break;
-                }
-            if(!fail){
-                out.println("fail");
-                playerList.add(new Player(username,password,0,0));
-            }
-        }
-        out.flush();
     }
     static void begin() throws IOException {
         BufferedReader reader=new BufferedReader(new FileReader("resources//Players.txt"));
@@ -92,10 +52,12 @@ public class MyServer {
             line=playerList.get(i).username+" "
                     +playerList.get(i).password+" "
                     +playerList.get(i).totalGame+" "
-                    +playerList.get(i).wonGame;
+                    +playerList.get(i).wonGame+"\n";
             writer.write(line);
         }
         writer.close();
+        socketList=new ArrayList<>();
+        onlineList=new ArrayList<>();
     }
 }
 class BeforeExit{

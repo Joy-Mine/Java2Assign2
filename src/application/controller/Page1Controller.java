@@ -93,8 +93,14 @@ public class Page1Controller implements Initializable{
                     alert.showAndWait();
                 }else {
                     System.out.println("登录成功!");
+                    int total=Integer.parseInt(in.next());
+                    int won=Integer.parseInt(in.next());
+                    System.out.println("你好，"+userName+"！你的战绩："+won+"胜 "+total+"负");
                     //todo: 换场景！！
                     sceneNum=2;
+
+
+
                 }
                 loginStage.close();
             }
