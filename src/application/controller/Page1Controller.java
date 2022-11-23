@@ -58,6 +58,7 @@ public class Page1Controller implements Initializable{
     private static final boolean[][] flag = new boolean[3][3];
 
     private static boolean gameOver=false;
+    private static boolean tie=false;
     private AnchorPane baseSquare;
 
     Socket s;
@@ -130,9 +131,7 @@ public class Page1Controller implements Initializable{
                     String ans2="";
                     in.nextLine();
                     if(in.hasNext())
-                        ans=in.nextLine();
-                    System.out.println(ans);
-                    System.out.println("GameBegin".equals(ans2));
+                        ans2=in.nextLine();
                     if("GameBegin".equals(ans2)){
                         //棋盘出现，开始下棋
                         System.out.println("对局开始");
@@ -178,6 +177,9 @@ public class Page1Controller implements Initializable{
                             int x = (int) (aevent.getX() / BOUND);
                             int y = (int) (aevent.getY() / BOUND);
                             if (refreshBoard(x, y)) {
+                                out.println(TURN+" "+x+" "+y);
+                                out.flush();
+
                                 if(gameOver){
                                     //gameover
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -189,7 +191,79 @@ public class Page1Controller implements Initializable{
                                 TURN = !TURN;
                             }
                         });
-                    }else System.out.println("Please wait for another player...请等待对手上线...");
+                    }else{
+                        System.out.println("Please wait for another player...请等待对手上线...");
+                        if(in.hasNext())
+                            ans=in.next();
+                        if("GameBegin".equals(ans)){
+                            System.out.println("对局开始");
+                            TURN=!TURN;
+
+                            Stage board=new Stage();
+                            board.setWidth(600);
+                            board.setHeight(400);
+                            Rectangle game_panel=new Rectangle();
+                            baseSquare=new AnchorPane();
+                            baseSquare.setPrefWidth(300);
+                            baseSquare.setPrefHeight(300);
+                            game_panel.setWidth(270);
+                            game_panel.setHeight(270);
+//                    game_panel.setStroke(Paint.valueOf("BLACK"));
+                            game_panel.setStrokeType(StrokeType.INSIDE);
+                            Line line1=new Line();
+                            line1.setEndX(170);
+                            line1.setStartX(-100);
+                            line1.setLayoutX(115);
+                            line1.setLayoutY(105);
+                            Line line2=new Line();
+                            line2.setEndX(170);
+                            line2.setStartX(-100);
+                            line2.setLayoutX(115);
+                            line2.setLayoutY(195);
+                            Line line3=new Line();
+                            line3.setEndX(170);
+                            line3.setStartX(-100);
+                            line3.setLayoutX(70);
+                            line3.setLayoutY(150);
+                            line3.setRotate(270.0);
+                            Line line4=new Line();
+                            line4.setEndX(170);
+                            line4.setStartX(-100);
+                            line4.setLayoutX(160);
+                            line4.setLayoutY(151);
+                            line4.setRotate(90.0);
+                            baseSquare.getChildren().addAll(game_panel,line1,line2,line3,line4);
+                            Scene boardScene=new Scene(baseSquare);
+                            board.setScene(boardScene);
+                            board.show();
+
+                            game_panel.setOnMouseClicked(aevent -> {
+                                int x = (int) (aevent.getX() / BOUND);
+                                int y = (int) (aevent.getY() / BOUND);
+                                if (refreshBoard(x, y)) {
+                                    if(gameOver){
+                                        //gameover
+                                        if(!tie) {
+                                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                            alert.titleProperty().set("Win");
+                                            alert.headerTextProperty().set("You Win.");
+                                            alert.showAndWait();
+                                            board.close();
+                                        }
+                                        else {
+                                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                            alert.titleProperty().set("Tie");
+                                            alert.headerTextProperty().set("A Tie!");
+                                            alert.showAndWait();
+                                            board.close();
+                                        }
+                                    }
+                                    TURN = !TURN;
+                                }
+                            });
+                        }
+
+                    }
 
                 }
                 loginStage.close();
@@ -350,6 +424,16 @@ public class Page1Controller implements Initializable{
     }
 
     public void judgeOver(int x,int y,int tmp){
+        tie=true;
+        for(int i=0;i<3;++i)
+            for (int j=0;j<3;++j)
+                if(chessBoard[i][j]==EMPTY)
+                    tie=false;
+
+        if(tie) {
+            gameOver=true;
+            return;
+        }
         if(x==1 && y==1){
             if(chessBoard[x+1][y-1]==tmp && chessBoard[x-1][y+1]==tmp)
                 gameOver=true;

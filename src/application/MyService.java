@@ -39,6 +39,8 @@ public class MyService implements Runnable{
             in2=new Scanner(s2.getInputStream());
             out2=new PrintWriter(s2.getOutputStream());
                 //todo: do the service
+
+
         }catch (IOException e) {
             e.printStackTrace();
         }

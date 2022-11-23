@@ -8,12 +8,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static application.MyServer.socketList;
+
 public class LoginService implements Runnable{
     private Socket s;
     private Scanner in;
     private PrintWriter out;
 
-    public  ArrayList<Socket> socketList=new ArrayList<>();
+//    public  ArrayList<Socket> socketList=new ArrayList<>();
 
     public LoginService(Socket aSocket){
         this.s=aSocket;
@@ -90,18 +92,29 @@ public class LoginService implements Runnable{
             }
         }else if("Prepared".equals(command)){
             socketList.add(s);
-            if(socketList.size()<2){
+            if((socketList.size()/2)%2==1){
                 System.out.println("Please wait for another player...请等待对手上线...");
                 out.println("Please wait for another player...请等待对手上线...");
                 out.flush();
                 return false;
                 }
-            System.out.println("GamBegin");
-            out.println("GameBegin");
-            out.flush();
-            MyService aService=new MyService(socketList.get(0),socketList.get(1));
-            Thread t2=new Thread(aService);
-            t2.start();
+            else {
+                System.out.println("SocketList size:"+socketList.size());
+                System.out.println("GameBegin");
+                out.println("GameBegin");
+                out.flush();
+                try {
+                    PrintWriter out2=new PrintWriter(socketList.get(0).getOutputStream());
+                    out2.println("GameBegin");
+                    out2.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                MyService aService=new MyService(s,socketList.get(0));
+                Thread t2=new Thread(aService);
+                t2.start();
+                in.close();//停止接收命令
+            }
         }
         out.flush();
         if(succeed)
